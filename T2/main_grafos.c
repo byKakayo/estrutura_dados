@@ -1,17 +1,7 @@
-/* 
- * File:   main.c
- * Author: manzato
- *
- * Created on November 12, 2014, 10:17 AM
- */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include "grafo.h"
 
-/*
- * 
- */
 int main(int argc, char** argv) {
     grafo_t *G;
     int opcao, v1, v2, aux;
@@ -59,7 +49,7 @@ int main(int argc, char** argv) {
             if (retirar_aresta(G, v1, v2) == 0)
                 printf("\nErro ao retirar aresta\n");
             else printf("\nAresta retirada\n");
-            
+
         } else if (opcao == 5)
             imprimir(G);
         else if (opcao == 6) {
@@ -70,4 +60,3 @@ int main(int argc, char** argv) {
     }
     return (EXIT_SUCCESS);
 }
-
