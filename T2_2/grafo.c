@@ -120,22 +120,20 @@ int existe_aresta(grafo_t *G, int v1, int v2){
 
 int retirar_aresta(grafo_t *G, int v1, int v2){
   if(existe_aresta(G, v1, v2)){
-    no_t *aux = G->adj[(v1-1)]->prox;
-    no_t *x;
+    no_t *ant = G->adj[(v1-1)];
+    no_t *aux = ant->prox;
     while(aux->V < v2){
+      ant = aux;
       aux = aux->prox;
     }
-    if(aux->prox == NULL){
-      x = aux;
+    if(ant == G->adj[(v1-1)]){
       G->adj[(v1-1)] = NULL;
-    }else if(aux->prox->prox == NULL){
-      x = aux->prox;
-      aux->prox = NULL;
+    }else if(aux->prox == NULL){
+      ant->prox = NULL;
     }else{
-      x = aux->prox;
-      aux->prox = aux->prox->prox;
+      ant->prox = aux->prox;
     }
-    free(x);
+    free(aux);
     if(existe_aresta(G, v2, v1)){
       return retirar_aresta(G, v2, v1);
     }else{
@@ -153,7 +151,7 @@ void imprimir(grafo_t *G){
       printf("%d", aux->V);
       while(aux->prox != NULL){
         aux = aux->prox;
-        printf("-> %d", aux->V);
+        printf(" -> %d", aux->V);
       }
     }
     printf("\n");
