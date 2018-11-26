@@ -34,7 +34,7 @@ no_t *criarNo(int v, int peso){
 };
 
 int criar_aresta(grafo_t *G, int v1, int v2, int peso){
-  if(v1 > G->V || v2 > G->V || v1 == v2) || existe_aresta(G, v1, v2)){
+  if(v1 > G->V || v2 > G->V || v1 == v2 || existe_aresta(G, v1, v2)){
     return 0;
   }
   if(G->adj[(v1-1)] == NULL){
