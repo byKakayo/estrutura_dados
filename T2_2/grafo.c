@@ -66,40 +66,16 @@ int criar_aresta(grafo_t *G, int v1, int v2, int peso){
       }
     }
   }
-
-  if(G->adj[(v2-1)] == NULL){
-    no_t *v = (no_t *)malloc(sizeof(no_t));
-    v->prox = criarNo(v1, peso);
-    v->V = v2;
-    v->peso = 0;
-    G->adj[(v2-1)] = v;
-  }else{
-    no_t *v = G->adj[(v2-1)];
-    if(v->prox == NULL){
-      v->prox = criarNo(v1, peso);
-    }else{
-      no_t *x = criarNo(v1, peso);
-      no_t *ant = v;
-      no_t *aux = v->prox;
-      while(aux->V < v1 && aux->prox != NULL){
-        ant = aux;
-        aux = aux->prox;
-      }
-      if(aux->prox == NULL && aux->V < v1){
-        aux->prox = x;
-      }else if(aux->V > v1){
-        ant->prox = x;
-        x->prox = aux;
-      }else{
-        x->prox = aux->prox;
-        aux->prox = x;
-      }
-    }
+  if(existe_aresta(G, v2, v1) == 0){
+    return criar_aresta(G, v2, v1, peso);
   }
   return 1;
 };
 
 int existe_aresta(grafo_t *G, int v1, int v2){
+  if(v1 > G->V || v2 > G->V || v1 == v2){
+    return 0;
+  }
   no_t *aux = G->adj[(v1-1)];
   if(aux == NULL || aux->prox == NULL){
     return 0;
@@ -108,7 +84,7 @@ int existe_aresta(grafo_t *G, int v1, int v2){
     while(aux->V < v2 && aux->prox != NULL){
       aux = aux->prox;
     }
-    if(aux->prox == NULL && aux->V == v2){
+    if(aux->V == v2){
       return 1;
     }else if(aux->prox != NULL && aux->prox->V == v2){
       return 1;
@@ -126,7 +102,7 @@ int retirar_aresta(grafo_t *G, int v1, int v2){
       ant = aux;
       aux = aux->prox;
     }
-    if(ant == G->adj[(v1-1)]){
+    if(ant == G->adj[(v1-1)] && aux->prox == NULL){
       G->adj[(v1-1)] = NULL;
     }else if(aux->prox == NULL){
       ant->prox = NULL;
@@ -136,9 +112,8 @@ int retirar_aresta(grafo_t *G, int v1, int v2){
     free(aux);
     if(existe_aresta(G, v2, v1)){
       return retirar_aresta(G, v2, v1);
-    }else{
-      return 1;
     }
+    return 1;
   }else{
     return 0;
   }
