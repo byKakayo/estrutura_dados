@@ -30,7 +30,7 @@ grafo_t *criar(int nvertices){
 };
 
 int criar_aresta(grafo_t *G, int v1, int v2, int peso){
-  if(G != NULL && G->adj[(v1-1)][(v2-1)] == -1 && v1 <= G->V && v2 <= G->V){
+  if(v1 <= G->V && v2 <= G->V && G != NULL && G->adj[(v1-1)][(v2-1)] == -1){
     G->adj[(v1-1)][(v2-1)] = peso;
     G->adj[(v2-1)][(v1-1)] = peso;
     G->A++;
@@ -41,7 +41,7 @@ int criar_aresta(grafo_t *G, int v1, int v2, int peso){
 };
 
 int existe_aresta(grafo_t *G, int v1, int v2){
-  if(G->adj[(v1-1)][(v2-1)] == -1){
+  if(v1 > G->V || v2 > G->V || G->adj[(v1-1)][(v2-1)] == -1){
     return 0;
   }else{
     return 1;
@@ -49,7 +49,7 @@ int existe_aresta(grafo_t *G, int v1, int v2){
 };
 
 int retirar_aresta(grafo_t *G, int v1, int v2){
-  if(G != NULL && G->adj[(v1-1)][(v2-1)] != -1 && v1 <= G->V && v2 <= G->V){
+  if(v1 <= G->V && v2 <= G->V && G != NULL && G->adj[(v1-1)][(v2-1)] != -1){
     G->adj[(v1-1)][(v2-1)] = -1;
     G->adj[(v2-1)][(v1-1)] = -1;
     G->A--;
@@ -61,10 +61,10 @@ int retirar_aresta(grafo_t *G, int v1, int v2){
 
 void imprimir(grafo_t *G){
   for(int i = 1; i <= G->V; i++){
-    printf("%d\n", i);
+    printf("%d", i);
     for (int x = 1; x <= G->V; x++) {
       if(G->adj[(i-1)][(x-1)] != -1){
-        printf("%d\n", x);
+        printf(" -> %d", x);
       }
     }
     printf("\n");
