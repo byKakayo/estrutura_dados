@@ -16,6 +16,8 @@ struct no{
 };
 
 grafo_t *criar(int nvertices){
+  /* Alocar grafo na memória
+     Alocar nvertices nós e definí-los como NULL */
   grafo_t *G = (grafo_t *)malloc(sizeof(grafo_t));
   G->V = nvertices;
   G->adj = malloc(nvertices * sizeof(no_t*));
@@ -26,6 +28,7 @@ grafo_t *criar(int nvertices){
 };
 
 no_t *criarNo(int v, int peso){
+  // Aloca um nó
   no_t *n = (no_t *)malloc(sizeof(no_t));
   n->V = v;
   n->peso = peso;
@@ -34,9 +37,25 @@ no_t *criarNo(int v, int peso){
 };
 
 int criar_aresta(grafo_t *G, int v1, int v2, int peso){
-  if(v1 > G->V || v2 > G->V || v1 == v2 || existe_aresta(G, v1, v2)){
+  // Caso a aresta já exista -> erro
+  if(existe_aresta(G, v1, v2)){
     return 0;
   }
+  /* Se o vértice não possui nenhum adjacente:
+      Alocar o vértice 1 e 2
+      Conectar 1 e 2 (criar aresta)
+     Vértice 1 está alocado e não possui adjacentes:
+      Alocar vértice 2
+      Conectar 1 e 2 (criar aresta)
+     Vértice 1 está alocando e possui adjacentes:
+      Alocar 2
+      Criar duas auxiliares
+      Percorrer lista de adjacentes do vértice 1
+      Inserção no fim da lista
+      Inserção no meio da lista
+      Inserção no início
+     Se o vértice de 2 p/ 1 ainda não foi criado, chamar a função invertendo os vértices
+    */
   if(G->adj[(v1-1)] == NULL){
     no_t *v = (no_t *)malloc(sizeof(no_t));
     v->prox = criarNo(v2, peso);
@@ -73,9 +92,17 @@ int criar_aresta(grafo_t *G, int v1, int v2, int peso){
 };
 
 int existe_aresta(grafo_t *G, int v1, int v2){
-  if(v1 > G->V || v2 > G->V || v1 == v2){
+  /* Caso o grafo não existe
+     Caso os vértices sejam maiores que o número de vértices do grafo
+     Caso os vértices sejam iguais
+     Aresta não existe */
+  if(G == NULL || v1 > G->V || v2 > G->V || v1 == v2){
     return 0;
   }
+  /* Cria auxiliar apontando para o vértice 1
+     Se auxiliar não existe ou não existir adjacentes a ele
+      Aresta não existe
+     CC percorrer os adjacentes */
   no_t *aux = G->adj[(v1-1)];
   if(aux == NULL || aux->prox == NULL){
     return 0;
@@ -95,6 +122,11 @@ int existe_aresta(grafo_t *G, int v1, int v2){
 };
 
 int retirar_aresta(grafo_t *G, int v1, int v2){
+  /* Caso exista a aresta
+      Criar duas auxiliares e percorrer a lista
+      Atualizar ponteiros
+      Caso exista a aresta do vértice 2 ao 1
+        Chamar novamente a função de remoção invertendo os vértices */
   if(existe_aresta(G, v1, v2)){
     no_t *ant = G->adj[(v1-1)];
     no_t *aux = ant->prox;
@@ -120,32 +152,36 @@ int retirar_aresta(grafo_t *G, int v1, int v2){
 };
 
 void imprimir(grafo_t *G){
-  for(int v = 0; v < G->V; v++){
-    no_t *aux = G->adj[v];
-    if(aux != NULL){
-      printf("%d", aux->V);
-      while(aux->prox != NULL){
-        aux = aux->prox;
-        printf(" -> %d", aux->V);
+  if(G != NULL){
+    for(int v = 0; v < G->V; v++){
+      no_t *aux = G->adj[v];
+      if(aux != NULL){
+        printf("%d", aux->V);
+        while(aux->prox != NULL){
+          aux = aux->prox;
+          printf(" -> %d", aux->V);
+        }
       }
+      printf("\n");
     }
-    printf("\n");
   }
 };
 
 void liberar_memoria(grafo_t *G){
-  for(int i = 0; i<G->V; i++){
-    if(G->adj[i] != NULL){
-      if(G->adj[i]->prox != NULL){
-        no_t *aux = G->adj[i]->prox;
-        no_t *x;
-        while(aux->prox != NULL){
-          x = aux;
-          aux = aux->prox;
-          free(x);
+  if(G != NULL){
+    for(int i = 0; i<G->V; i++){
+      if(G->adj[i] != NULL){
+        if(G->adj[i]->prox != NULL){
+          no_t *aux = G->adj[i]->prox;
+          no_t *x;
+          while(aux->prox != NULL){
+            x = aux;
+            aux = aux->prox;
+            free(x);
+          }
         }
       }
     }
+    free(G->adj);
   }
-  free(G->adj);
 };

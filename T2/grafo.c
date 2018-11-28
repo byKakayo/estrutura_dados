@@ -9,6 +9,7 @@ struct grafo{
 };
 
 int **matriz(int l, int c, int val){
+  //Gera a matriz, alocando todos os campo com o valor default (-1)
   int **m = malloc(l * sizeof(int *));
   for(int i = 0; i < l; i++){
     m[i] = malloc(c * sizeof(int));
@@ -22,6 +23,7 @@ int **matriz(int l, int c, int val){
 };
 
 grafo_t *criar(int nvertices){
+  //Aloca o grafo na memória
   grafo_t *G = (grafo_t *)malloc(sizeof(grafo_t));
   G->V = nvertices;
   G->A = 0;
@@ -30,7 +32,11 @@ grafo_t *criar(int nvertices){
 };
 
 int criar_aresta(grafo_t *G, int v1, int v2, int peso){
-  if(v1 <= G->V && v2 <= G->V && G != NULL && G->adj[(v1-1)][(v2-1)] == -1){
+  /* O grafo deve existir
+     Nenhum dos vértices pode ser maior que o número de vétices do grafo
+     Como não é um dígrafo, os vértices não podem ser iguais
+     A aresta possui valor default (não existe) */
+  if(G != NULL && v1 <= G->V && v2 <= G->V && v1 != v2 && G->adj[(v1-1)][(v2-1)] == -1){
     G->adj[(v1-1)][(v2-1)] = peso;
     G->adj[(v2-1)][(v1-1)] = peso;
     G->A++;
@@ -41,7 +47,12 @@ int criar_aresta(grafo_t *G, int v1, int v2, int peso){
 };
 
 int existe_aresta(grafo_t *G, int v1, int v2){
-  if(v1 > G->V || v2 > G->V || G->adj[(v1-1)][(v2-1)] == -1){
+  /* Caso o grafo não exista
+     Caso os vértices procurados sejam maiores que o número de vértices do grafo
+     Caso os vértice sejam iguais
+     Caso a aresta não exista
+     Aresta não existe */
+  if(G == NULL || v1 > G->V || v2 > G->V || v1 == v2 || G->adj[(v1-1)][(v2-1)] == -1){
     return 0;
   }else{
     return 1;
@@ -49,7 +60,11 @@ int existe_aresta(grafo_t *G, int v1, int v2){
 };
 
 int retirar_aresta(grafo_t *G, int v1, int v2){
-  if(v1 <= G->V && v2 <= G->V && G != NULL && G->adj[(v1-1)][(v2-1)] != -1){
+  /* O grafo existe
+     Os vértices procurados são menores que o número de vértices do grafo
+     Os vértices são diferentes
+     A aresta possui valor diferente do default (existe)*/
+  if(G != NULL && v1 <= G->V && v2 <= G->V && v1 != v2 && G->adj[(v1-1)][(v2-1)] != -1){
     G->adj[(v1-1)][(v2-1)] = -1;
     G->adj[(v2-1)][(v1-1)] = -1;
     G->A--;
@@ -60,14 +75,20 @@ int retirar_aresta(grafo_t *G, int v1, int v2){
 };
 
 void imprimir(grafo_t *G){
-  for(int i = 1; i <= G->V; i++){
-    printf("%d", i);
-    for (int x = 1; x <= G->V; x++) {
-      if(G->adj[(i-1)][(x-1)] != -1){
-        printf(" -> %d", x);
+  /* Se o grafo existe:
+     Percorre todos os vértices e seus adjacentes
+     Caso aresta diferente do valor default
+     Imprimir vértice correspondente */
+  if(G != NULL){
+    for(int i = 1; i <= G->V; i++){
+      printf("%d", i);
+      for (int x = 1; x <= G->V; x++) {
+        if(G->adj[(i-1)][(x-1)] != -1){
+          printf(" -> %d", x);
+        }
       }
+      printf("\n");
     }
-    printf("\n");
   }
 };
 
