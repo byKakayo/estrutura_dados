@@ -213,5 +213,6 @@ void liberar_memoria(grafo_t *G){
       }
     }
     free(G->adj);
+    free(G);
   }
 };
