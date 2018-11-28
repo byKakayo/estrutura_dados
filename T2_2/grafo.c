@@ -15,6 +15,7 @@ struct no{
   no_t *prox;
 };
 
+//FUNÇÃO PARA CRIAR O GRAFO
 grafo_t *criar(int nvertices){
   /* Alocar grafo na memória
      Alocar nvertices nós e definí-los como NULL */
@@ -27,6 +28,7 @@ grafo_t *criar(int nvertices){
   return G;
 };
 
+//FUNÇÃO PARA CRIAR UM NÓ
 no_t *criarNo(int v, int peso){
   // Aloca um nó
   no_t *n = (no_t *)malloc(sizeof(no_t));
@@ -36,26 +38,68 @@ no_t *criarNo(int v, int peso){
   return n;
 };
 
-int criar_aresta(grafo_t *G, int v1, int v2, int peso){
-  // Caso a aresta já exista -> erro
-  if(existe_aresta(G, v1, v2)){
-    return 0;
+/*FUNÇÃO QUE RETORNA O NÓ ANTERIOR AO PROCURADO
+    SE O NÓ NÃO EXISTE -> RETORNA NULL
+*/
+no_t *procura_aresta(grafo_t *G, int v1, int v2){
+  /* Caso o grafo não existe
+     Caso os vértices sejam maiores que o número de vértices do grafo
+     Caso os vértices sejam iguais
+     Aresta não existe */
+  if(G == NULL || v1 > G->V || v2 > G->V || v1 == v2){
+    return NULL;
   }
+  /* Cria auxiliar apontando para o vértice 1
+     Se auxiliar não existe ou não existir adjacentes a ele
+      Aresta não existe */
+  no_t *aux = G->adj[(v1-1)];
+  if(aux == NULL || aux->prox == NULL){
+    return NULL;
+  }else{
+  /* Vértice procurado é o primeiro da lista
+      CC percorre a lista*/
+    if(aux->prox->V == v2){
+      return aux;
+    }
+    while(aux->prox->V < v2 && aux->prox->prox != NULL){
+      aux = aux->prox;
+    }
+    if(aux->prox->V == v2){
+      return aux;
+    }else if(aux->prox->prox != NULL && aux->prox->prox->V == v2){
+      return aux->prox;
+    }else{
+      return NULL;
+    }
+  }
+}
+
+//FUNÇÃO QUE RETORNA UM VALOR BOOLEAN P/ EXISTÊNCIA DA ARESTA
+int existe_aresta(grafo_t *G, int v1, int v2){
+  no_t * v = procura_aresta(G, v1, v2);
+  if(v == NULL){
+    return 0;
+  }else{
+    return 1;
+  }
+};
+
+
+//FUNÇÃO DE INSERÇÃO DE UMA ARESTA
+int inserir_aresta(grafo_t *G, int v1, int v2, int peso){
   /* Se o vértice não possui nenhum adjacente:
-      Alocar o vértice 1 e 2
-      Conectar 1 e 2 (criar aresta)
-     Vértice 1 está alocado e não possui adjacentes:
-      Alocar vértice 2
-      Conectar 1 e 2 (criar aresta)
-     Vértice 1 está alocando e possui adjacentes:
-      Alocar 2
-      Criar duas auxiliares
-      Percorrer lista de adjacentes do vértice 1
-      Inserção no fim da lista
-      Inserção no meio da lista
-      Inserção no início
-     Se o vértice de 2 p/ 1 ainda não foi criado, chamar a função invertendo os vértices
-    */
+  Alocar o vértice 1 e 2
+  Conectar 1 e 2 (criar aresta)
+  Vértice 1 está alocado e não possui adjacentes:
+  Conectar 1 e 2 (criar aresta)
+  Alocar vértice 2
+  Vértice 1 está alocando e possui adjacentes:
+  Alocar 2
+  Criar duas auxiliares
+  Percorrer lista de adjacentes do vértice 1
+  Inserção no fim da lista
+  Inserção no meio da lista
+  Inserção no início  */
   if(G->adj[(v1-1)] == NULL){
     no_t *v = (no_t *)malloc(sizeof(no_t));
     v->prox = criarNo(v2, peso);
@@ -85,66 +129,52 @@ int criar_aresta(grafo_t *G, int v1, int v2, int peso){
       }
     }
   }
-  if(existe_aresta(G, v2, v1) == 0){
-    return criar_aresta(G, v2, v1, peso);
-  }
   return 1;
 };
 
-int existe_aresta(grafo_t *G, int v1, int v2){
-  /* Caso o grafo não existe
+//FUNÇÃO QUE RETORNA UM VALOR BOOLEAN P/ CRIAÇÃO DA ARESTA
+int criar_aresta(grafo_t *G, int v1, int v2, int peso){
+  /* Caso o grafo não exista
      Caso os vértices sejam maiores que o número de vértices do grafo
-     Caso os vértices sejam iguais
-     Aresta não existe */
-  if(G == NULL || v1 > G->V || v2 > G->V || v1 == v2){
+     Caso a aresta já exista
+      ERRO */
+  if(G == NULL || v1 > G->V || v2 > G->V || existe_aresta(G, v1, v2)){
     return 0;
   }
-  /* Cria auxiliar apontando para o vértice 1
-     Se auxiliar não existe ou não existir adjacentes a ele
-      Aresta não existe
-     CC percorrer os adjacentes */
-  no_t *aux = G->adj[(v1-1)];
-  if(aux == NULL || aux->prox == NULL){
-    return 0;
-  }else{
-    aux = aux->prox;
-    while(aux->V < v2 && aux->prox != NULL){
-      aux = aux->prox;
-    }
-    if(aux->V == v2){
-      return 1;
-    }else if(aux->prox != NULL && aux->prox->V == v2){
-      return 1;
-    }else{
-      return 0;
-    }
+  // Se inserir a aresta de v1 -> v2 e v2 -> v1 com sucesso
+  if(inserir_aresta(G, v1, v2, peso) && inserir_aresta(G, v2, v1, peso)){
+    return 1;
   }
 };
 
+int delete_aresta(grafo_t *G, int v1, int v2){
+  no_t *v = procura_aresta(G, v1, v2);
+  if(v == NULL){
+    return 0;
+  }
+  no_t *aux;
+  aux = v->prox;
+  if(v == G->adj[(v1-1)] && aux->prox == NULL){
+    G->adj[(v1-1)] = NULL;
+  }else if(aux->prox == NULL){
+    v->prox = NULL;
+  }else{
+    v->prox = aux->prox;
+  }
+  free(aux);
+  return 1;
+}
+
+//FUNÇÃO QUE RETORNA UM VALOR BOOLEAN P/ CRIAÇÃO DA ARESTA
 int retirar_aresta(grafo_t *G, int v1, int v2){
-  /* Caso exista a aresta
-      Criar duas auxiliares e percorrer a lista
-      Atualizar ponteiros
-      Caso exista a aresta do vértice 2 ao 1
-        Chamar novamente a função de remoção invertendo os vértices */
-  if(existe_aresta(G, v1, v2)){
-    no_t *ant = G->adj[(v1-1)];
-    no_t *aux = ant->prox;
-    while(aux->V < v2){
-      ant = aux;
-      aux = aux->prox;
-    }
-    if(ant == G->adj[(v1-1)] && aux->prox == NULL){
-      G->adj[(v1-1)] = NULL;
-    }else if(aux->prox == NULL){
-      ant->prox = NULL;
-    }else{
-      ant->prox = aux->prox;
-    }
-    free(aux);
-    if(existe_aresta(G, v2, v1)){
-      return retirar_aresta(G, v2, v1);
-    }
+  /* Caso o grafo não exista
+     Caso os vértices sejam maiores que o número de vértices do grafo
+      ERRO */
+  if(G == NULL || v1 > G->V || v2 > G->V){
+    return 0;
+  }
+  // Se remover a aresta de v1 -> v2 e v2 -> v1 com sucesso
+  if(delete_aresta(G, v1, v2) && delete_aresta(G, v2, v1)){
     return 1;
   }else{
     return 0;
