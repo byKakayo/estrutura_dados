@@ -118,7 +118,11 @@ int inserir_aresta(grafo_t *G, int v1, int v2, int peso){
         ant = aux;
         aux = aux->prox;
       }
-      if(aux->prox == NULL && aux->V < v2){
+      if(aux->V == v2){
+        return 0;
+      }else if(aux->prox != NULL && aux->prox->V == v2){
+        return 0;
+      }else if(aux->prox == NULL && aux->V < v2){
         aux->prox = x;
       }else if(aux->V > v2){
         ant->prox = x;
@@ -136,9 +140,8 @@ int inserir_aresta(grafo_t *G, int v1, int v2, int peso){
 int criar_aresta(grafo_t *G, int v1, int v2, int peso){
   /* Caso o grafo não exista
      Caso os vértices sejam maiores que o número de vértices do grafo
-     Caso a aresta já exista
       ERRO */
-  if(G == NULL || v1 > G->V || v2 > G->V || existe_aresta(G, v1, v2)){
+  if(G == NULL || v1 > G->V || v2 > G->V){
     return 0;
   }
   // Se inserir a aresta de v1 -> v2 e v2 -> v1 com sucesso
