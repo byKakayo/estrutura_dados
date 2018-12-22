@@ -30,12 +30,14 @@ struct dic {
 verbete_t *busca_verbete(dic_t *d, char *arg1, int flag);
 verbete_t* criar_verbete(int level, char *arg1, char *arg2);
 
+//Função que retorna um valor aleatório
 float randomize(){
   float prob;
   prob = ((float)rand()) / (float)(RAND_MAX);
   return prob;
 }
 
+//Funçãoo que retorna um nível aleatório
 int level(){
   int lvl;
   while(randomize() < p && lvl < max_lvl){
@@ -44,6 +46,7 @@ int level(){
   return lvl;
 }
 
+//Aloca a estrutura do dicionário na memória
 dic_t *criar(){
   dic_t *d = (dic_t *)malloc(sizeof(dic_t));
   d->prim = criar_verbete(max_lvl, " ", " ");
@@ -51,6 +54,7 @@ dic_t *criar(){
   return d;
 }
 
+//Aloca um nó(verbete) na memória
 verbete_t* criar_verbete(int level, char *arg1, char *arg2){
     verbete_t *v = (verbete_t *)malloc(sizeof(verbete_t));
     v->lvl = level;
@@ -68,6 +72,7 @@ verbete_t* criar_verbete(int level, char *arg1, char *arg2){
     return v;
 }
 
+//Insere um novo nó(verbete)
 void insercao(dic_t *d, char *arg1, char *arg2){
   verbete_t *aux = d->prim;
   verbete_t **x = malloc((max_lvl + 1) * sizeof(verbete_t*));
@@ -99,6 +104,7 @@ void insercao(dic_t *d, char *arg1, char *arg2){
   }
 }
 
+//
 verbete_t *busca_verbete(dic_t *d, char *arg1, int flag){
   verbete_t *x = d->prim;
   int lvl = x->lvl;
@@ -129,6 +135,7 @@ verbete_t *busca_verbete(dic_t *d, char *arg1, int flag){
   }
 }
 
+//Printa todos os nós(verbetes) do dicionário
 void impressao(dic_t *d, char *ch1){
   verbete_t *v;
   char c[max_verb];
@@ -143,6 +150,7 @@ void impressao(dic_t *d, char *ch1){
   }
 }
 
+//Altera a definição do verbete
 void alteracao(dic_t *d, char *arg1, char *arg2){
   verbete_t *v;
   v = busca_verbete(d, arg1, 0);
@@ -153,6 +161,7 @@ void alteracao(dic_t *d, char *arg1, char *arg2){
   }
 }
 
+//Remove um nó(verbete) do dicionário
 void remocao(dic_t *d, char *arg1){
   verbete_t *x = d->prim;
   verbete_t **aux;
@@ -185,10 +194,9 @@ void remocao(dic_t *d, char *arg1){
     printf("OPERACAO INVALIDA\n");
   }
   //free(x);
-
 }
 
-
+//Printa o nó(verbete) procurado
 void busca(dic_t *d, char *arg1){
   verbete_t *v;
   v = busca_verbete(d, arg1, 0);
